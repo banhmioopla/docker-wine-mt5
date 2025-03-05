@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+    mt5-app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: mt5_container
+        ports:
+            - "8080:8080"
+            - "5929:8080"
+            - "8000:8000"
+        environment:
+            - ACCOUNT=7300401
+            - PASSWORD=1@NGeF3vvh7mIy
+            - SERVER=ICMarketsSC-MT5-2
+            - TERMINAL_PATH_MT5_JUST_MARKET="./Program Files/MetaTrader 5 EXNESS"
+            - TERMINAL_PATH_EXNESS=123
+            - TERMINAL_PATH_MT5_ICMARKET=123
+            - CSV_MT5_ACCOUNT_JUST_MARKET=123
+            - CSV_MT5_ACCOUNT_EXNESS=123
+            - CSV_MT5_ACCOUNT_ICMARKET=123
+
+        deploy:
+            replicas: 1
