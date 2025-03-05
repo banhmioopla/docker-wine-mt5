@@ -8,10 +8,6 @@ RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Minif
     && bash miniforge.sh -b -p /opt/conda \
     && rm miniforge.sh
 
-RUN conda --version
-RUN pip3 install PythonMetaTrader5
-
-
 COPY install.sh /root/.wine/drive_c/
 COPY setup-python.sh /root/.wine/drive_c/
 RUN chmod +x /root/.wine/drive_c/install.sh
