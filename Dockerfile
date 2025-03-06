@@ -3,10 +3,10 @@ WORKDIR /root/.wine/drive_c/
 RUN apt-get update && apt-get install
 
 # Install Conda
-RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -O miniforge.sh \
-    && chmod +x miniforge.sh \
-    && bash miniforge.sh -b -p /opt/conda \
-    && rm miniforge.sh
+# RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -O miniforge.sh \
+#     && chmod +x miniforge.sh \
+#     && bash miniforge.sh -b -p /opt/conda \
+#     && rm miniforge.sh
 
 COPY install.sh /root/.wine/drive_c/
 COPY setup-python.sh /root/.wine/drive_c/
