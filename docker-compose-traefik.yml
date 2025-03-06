@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+    traefik:
+        image: traefik:v2.10
+        container_name: traefik
+        restart: always
+        command:
+            - "--api.dashboard=true"
+            - "--providers.docker=true"
+            - "--entrypoints.web.address=:80"
+        ports:
+            - "80:80"
+            - "8080:8080" # Dashboard Traefik
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        networks:
+            - proxy_network
+        labels:
+            - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+    mt5-app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: mt5_container
+        environment:
+            - ACCOUNT=7300401
+            - PASSWORD=1@NGeF3vvh7mIy
+            - SERVER=ICMarketsSC-MT5-2
+            - TERMINAL_PATH_MT5_JUST_MARKET="./Program Files/MetaTrader 5 EXNESS"
+            - TERMINAL_PATH_EXNESS=123
+            - TERMINAL_PATH_MT5_ICMARKET=123
+            - CSV_MT5_ACCOUNT_JUST_MARKET=123
+            - CSV_MT5_ACCOUNT_EXNESS=123
+            - CSV_MT5_ACCOUNT_ICMARKET=123
+        deploy:
+            replicas: 1
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.mt5.rule=Host(`vnc.chillinthehill.me`)"
+            - "traefik.http.routers.mt5.entrypoints=web"
+            - "traefik.http.services.mt5.loadbalancer.server.port=8080"
+        networks:
+            - proxy_network
+
+networks:
+    proxy_network:
+        driver: bridge

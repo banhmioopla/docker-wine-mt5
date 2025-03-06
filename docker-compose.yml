@@ -1,48 +1,40 @@
 version: "3.8"
-services:
-    traefik:
-        image: traefik:v2.10
-        container_name: traefik
-        restart: always
-        command:
-            - "--api.dashboard=true"
-            - "--providers.docker=true"
-            - "--entrypoints.web.address=:80"
-        ports:
-            - "80:80"
-            - "8080:8080" # Dashboard Traefik
-        volumes:
-            - "/var/run/docker.sock:/var/run/docker.sock:ro"
-        networks:
-            - proxy_network
-        labels:
-            - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
+networks:
+    mt-network:
+        driver: bridge
+services:
     mt5-app:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        container_name: mt5_container
+        image: asc686f61/fx-mt5:20241116
+        container_name: mt5-app
         environment:
             - ACCOUNT=7300401
             - PASSWORD=1@NGeF3vvh7mIy
             - SERVER=ICMarketsSC-MT5-2
-            - TERMINAL_PATH_MT5_JUST_MARKET="./Program Files/MetaTrader 5 EXNESS"
-            - TERMINAL_PATH_EXNESS=123
-            - TERMINAL_PATH_MT5_ICMARKET=123
-            - CSV_MT5_ACCOUNT_JUST_MARKET=123
-            - CSV_MT5_ACCOUNT_EXNESS=123
-            - CSV_MT5_ACCOUNT_ICMARKET=123
         deploy:
             replicas: 1
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.mt5.rule=Host(`vnc.chillinthehill.me`)"
-            - "traefik.http.routers.mt5.entrypoints=web"
-            - "traefik.http.services.mt5.loadbalancer.server.port=8080"
         networks:
-            - proxy_network
+            - mt-network
+        ports:
+            - "8080:8080"
+            - "18812:18812"
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:8080"]
+            interval: 10s
+            retries: 3
 
-networks:
-    proxy_network:
-        driver: bridge
+    mt5-python:
+        build:
+            context: .
+            dockerfile: mt5-python.Dockerfile
+        depends_on:
+            - mt5-app # make sure mt5-app go first!
+        networks:
+            - mt-network
+        environment:
+            - MT5_HOST=mt5-app
+        ports:
+            - "8000:8000"
+        container_name: mt5-python
+        restart: unless-stopped
