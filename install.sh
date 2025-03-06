@@ -12,5 +12,5 @@ wine ./installer/exness5setup.exe /auto || {
     exit 1
 }
 
-wine '/Program Files/MetaTrader 5 EXNESS/terminal64.exe'
+# wine '/Program Files/MetaTrader 5 EXNESS/terminal64.exe'
 
